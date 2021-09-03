@@ -3,7 +3,6 @@ chip_arch=tofino
 p4_build_dir = p4-build-$(P4_NAME)-$(chip_arch)
 
 AM_P4FLAGS = $(P4FLAGS)
-AM_P4FLAGS += -I$(abs_srcdir)/..
 AM_P4PPFLAGS = $(P4PPFLAGS)
 AM_PDFLAGS = $(PDFLAGS)
 
@@ -13,14 +12,15 @@ configure.ts.$(chip_arch):
 	mkdir -p $(p4_build_dir); \
 	cd $(p4_build_dir); \
 	$(abs_top_srcdir)/p4-build/configure \
+	    P4C_BM=$(abs_top_srcdir)/../p4c-bmv2/p4c_bm/__main__.py \
 	    P4_NAME=$(P4_NAME) \
 	    P4_PATH=$(P4_MAIN) \
 	    P4_VERSION=$(P4_VERSION) \
 	    P4_ARCHITECTURE=$(P4_ARCHITECTURE) \
 	    P4FLAGS='$(AM_P4FLAGS)' P4PPFLAGS='$(AM_P4PPFLAGS)' PDFLAGS='$(AM_PDFLAGS)' \
-	    --with-$(chip_arch) \
+	    --with-$(chip_arch) --enable-thrift $(P4_BUILD_EXTRA_CONFIG_FLAG) \
 	    --with-asan='$(ASAN_CONFIG_VAL)' \
-	    $(P4C_COMPILER) $(P4_BUILD_EXTRA_FLAGS) \
+	    $(P4C_COMPILER) \
 	    --prefix=$(prefix)
 
 all-local: configure.ts.$(chip_arch)
